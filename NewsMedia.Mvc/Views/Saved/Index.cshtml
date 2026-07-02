@@ -1,0 +1,161 @@
+﻿@model List<NewsMedia.Models.SourceItem>
+@{
+    ViewData["Title"] = "Guardados";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.8rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .saved-count {
+        background: #1a1a2e;
+        color: #fff;
+        border-radius: 8px;
+        padding: 5px 14px;
+        font-size: .85rem;
+        font-weight: 600;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 5rem 2rem;
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 2px 10px rgba(0,0,0,.05);
+    }
+
+        .empty-state .big-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h4 {
+            font-family: 'Playfair Display',serif;
+            color: #1a1a2e;
+            margin-bottom: .5rem;
+        }
+
+        .empty-state p {
+            color: #888;
+            font-size: .9rem;
+        }
+</style>
+
+<div class="page-header">
+    <div>
+        <h2 class="fw-bold mb-0" style="font-family:'Playfair Display',serif;">🔖 Mis Artículos Guardados</h2>
+        @if (Model.Any())
+        {
+            <p class="text-muted small mb-0 mt-1">@Model.Count artículo@(Model.Count != 1 ? "s" : "") guardado@(Model.Count != 1 ? "s" : "")</p>
+        }
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+        <a href="/Saved/Download" class="btn btn-success btn-sm px-3" style="border-radius:8px;">⬇️ Descargar JSON</a>
+        <button class="btn btn-outline-primary btn-sm px-3" style="border-radius:8px;"
+                data-bs-toggle="modal" data-bs-target="#uploadModal">
+            ⬆️ Importar JSON
+        </button>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="empty-state">
+        <div class="big-icon">🔖</div>
+        <h4>No tienes artículos guardados</h4>
+        <p>Ve a Noticias y haz clic en 🔖 para guardar los artículos que te interesen.</p>
+        <a href="/News" class="btn btn-dark mt-2" style="border-radius:8px;">Ir a Noticias</a>
+    </div>
+}
+else
+{
+    <div class="row g-3">
+        @foreach (var item in Model)
+        {
+            var data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(
+                item.Json ?? "{}", new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new();
+            var title = data.GetValueOrDefault("title", "Sin título");
+            var url = data.GetValueOrDefault("url", "#");
+            var desc = data.GetValueOrDefault("description", "");
+            var imgUrl = data.GetValueOrDefault("imageUrl", "");
+            var publishedAt = data.GetValueOrDefault("publishedAt", "");
+
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0" style="border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08);">
+                    @if (!string.IsNullOrEmpty(imgUrl))
+                    {
+                        <a href="@url" target="_blank">
+                            <img src="@imgUrl" alt="@title"
+                                 style="width:100%;height:175px;object-fit:cover;"
+                                 onerror="this.parentElement.style.display='none'" />
+                        </a>
+                    }
+                    else
+                    {
+                        <div style="width:100%;height:70px;background:linear-gradient(135deg,#1a1a2e,#c0392b22);display:flex;align-items:center;justify-content:center;font-size:1.8rem;">📰</div>
+                    }
+                    <div class="card-body d-flex flex-column" style="padding:1rem;">
+                        <h6 class="fw-bold" style="font-size:.92rem;line-height:1.4;">
+                            <a href="@url" target="_blank" class="text-dark text-decoration-none">@title</a>
+                        </h6>
+                        @if (!string.IsNullOrEmpty(desc))
+                        {
+                            <p class="text-muted small flex-grow-1" style="font-size:.82rem;">
+                                @(desc.Length > 110 ? desc[..110] + "..." : desc)
+                            </p>
+                        }
+                        <div class="d-flex flex-column gap-1 mt-auto">
+                            @if (!string.IsNullOrEmpty(publishedAt))
+                            {
+                                <small class="text-muted" style="font-size:.72rem;">📰 Publicado: @publishedAt</small>
+                            }
+                            <small class="text-muted" style="font-size:.72rem;">💾 Guardado: @item.CreatedAt.ToString("dd/MM/yyyy HH:mm")</small>
+                            <div class="d-flex gap-2 mt-2">
+                                <a href="@url" target="_blank"
+                                   class="btn btn-sm btn-outline-dark flex-grow-1" style="border-radius:6px;font-size:.8rem;">
+                                    🔗 Leer artículo
+                                </a>
+                                <form method="post" action="/Saved/Delete">
+                                    <input type="hidden" name="id" value="@item.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger"
+                                            style="border-radius:6px;"
+                                            onclick="return confirm('¿Eliminar este artículo?')">
+                                        🗑️
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<!-- Modal importar JSON -->
+<div class="modal fade" id="uploadModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius:14px;overflow:hidden;">
+            <div class="modal-header" style="background:#1a1a2e;color:#fff;border:none;">
+                <h5 class="modal-title">⬆️ Importar artículos JSON</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="/Saved/Upload" enctype="multipart/form-data">
+                <div class="modal-body px-4 py-3">
+                    <p class="text-muted small">Sube un archivo JSON exportado desde esta u otra app compatible del grupo.</p>
+                    <input type="file" name="file" accept=".json" class="form-control" required style="border-radius:8px;" />
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary btn-sm" style="background:#1a1a2e;border:none;border-radius:8px;">Importar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

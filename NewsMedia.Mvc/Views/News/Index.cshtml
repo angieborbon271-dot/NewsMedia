@@ -1,0 +1,190 @@
+﻿@model List<Dictionary<string, string>>
+@{
+    ViewData["Title"] = "Noticias";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var sources = ViewBag.Sources as List<NewsMedia.Models.Source> ?? new();
+    var selected = ViewBag.SelectedSource as int?;
+
+    var pageSize = 12;
+    var totalPages = (int)Math.Ceiling(Model.Count / (double)pageSize);
+    var currentPage = int.TryParse(Context.Request.Query["page"], out var p)
+                        ? Math.Max(1, Math.Min(p, totalPages)) : 1;
+    var paged = Model.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="fw-bold mb-0" style="font-family:'Playfair Display',serif;">📰 Noticias</h2>
+    <span class="badge bg-secondary fs-6">@Model.Count artículos</span>
+</div>
+
+<div class="mb-4 d-flex flex-wrap gap-2">
+    <a href="/News" class="btn btn-sm @(selected == null ? "btn-dark" : "btn-outline-dark")" style="border-radius:8px;">Todas</a>
+    @foreach (var src in sources)
+    {
+        <a href="/News?sourceId=@src.Id"
+           class="btn btn-sm @(selected == src.Id ? "btn-dark" : "btn-outline-dark")" style="border-radius:8px;">
+            @src.Name
+        </a>
+    }
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">No hay artículos disponibles. El administrador debe agregar fuentes.</div>
+}
+
+<div class="row g-3">
+    @foreach (var item in paged)
+    {
+        var title = item.GetValueOrDefault("title", "Sin título");
+        var url = item.GetValueOrDefault("url", "#");
+        var desc = item.GetValueOrDefault("description", "");
+        var date = item.GetValueOrDefault("publishedAt", "");
+        var srcName = item.GetValueOrDefault("sourceName", "");
+        var imgUrl = item.GetValueOrDefault("imageUrl", "");
+        var srcId = int.TryParse(item.GetValueOrDefault("sourceId", "0"), out var sid) ? sid : 0;
+        var words = (title + " " + desc).Split(' ').Length;
+        var readMin = Math.Max(1, words / 200);
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0" style="border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
+                @if (!string.IsNullOrEmpty(imgUrl))
+                {
+                    <a href="@url" target="_blank">
+                        <img src="@imgUrl" alt="@title"
+                             style="width:100%;height:185px;object-fit:cover;"
+                             onerror="this.parentElement.innerHTML='<div style=\'width:100%;height:80px;background:linear-gradient(135deg,#1a1a2e,#c0392b33);display:flex;align-items:center;justify-content:center;font-size:2rem;\'>📰</div>'" />
+                    </a>
+                }
+                else
+                {
+                    <div style="width:100%;height:80px;background:linear-gradient(135deg,#1a1a2e,#c0392b33);display:flex;align-items:center;justify-content:center;font-size:2rem;">📰</div>
+                }
+                <div class="card-body d-flex flex-column" style="padding:1rem;">
+                    <span class="badge bg-primary mb-2" style="width:fit-content;font-size:0.7rem;">@srcName</span>
+                    <h6 class="fw-bold" style="font-size:0.92rem;line-height:1.4;">
+                        <a href="@url" target="_blank" class="text-dark text-decoration-none">@title</a>
+                    </h6>
+                    @if (!string.IsNullOrEmpty(desc))
+                    {
+                        <p class="text-muted small flex-grow-1" style="font-size:0.82rem;">
+                            @(desc.Length > 120 ? desc[..120] + "..." : desc)
+                        </p>
+                    }
+                    <div class="d-flex gap-2 text-muted mb-2" style="font-size:0.75rem;">
+                        <span>⏱️ ~@readMin min de lectura</span>
+                        @if (!string.IsNullOrEmpty(date))
+                        {
+                            <span>🕐 @date</span>
+                        }
+                    </div>
+                    <div class="d-flex gap-2 mt-auto">
+                        <button class="btn btn-sm btn-outline-dark flex-grow-1"
+                                style="font-size:0.8rem;border-radius:6px;"
+                                onclick="abrirLectura('@Html.Raw(title.Replace("'", "\\'")), '@Html.Raw(desc.Replace("'", "\\'")), '@url', '@srcName', '@date', @readMin, '@imgUrl')">
+                            📖 Modo Lectura
+                        </button>
+                        @if (Context.Session.GetString("UserId") != null)
+                        {
+                            <form method="post" action="/News/Save">
+                                <input type="hidden" name="sourceId" value="@srcId" />
+                                <input type="hidden" name="title" value="@title" />
+                                <input type="hidden" name="url" value="@url" />
+                                <input type="hidden" name="description" value="@desc" />
+                                <input type="hidden" name="publishedAt" value="@date" />
+                                <input type="hidden" name="imageUrl" value="@imgUrl" />
+                                <button type="submit" class="btn btn-sm btn-warning" style="border-radius:6px;" title="Guardar">🔖</button>
+                            </form>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@* PAGINACIÓN  *@
+@if (totalPages > 1)
+{
+    <div class="d-flex justify-content-center align-items-center mt-4 gap-2 flex-wrap">
+        @if (currentPage > 1)
+        {
+            var qPrev = selected.HasValue ? $"?sourceId={selected}&page={currentPage - 1}" : $"?page={currentPage - 1}";
+            <a href="/News@(qPrev)" class="btn btn-sm btn-outline-dark" style="border-radius:8px;">← Anterior</a>
+        }
+        @for (int pg = Math.Max(1, currentPage - 2); pg <= Math.Min(totalPages, currentPage + 2); pg++)
+        {
+            var q = selected.HasValue ? $"?sourceId={selected}&page={pg}" : $"?page={pg}";
+            <a href="/News@(q)"
+               class="btn btn-sm @(pg == currentPage ? "btn-dark" : "btn-outline-dark")"
+               style="border-radius:8px;min-width:38px;">@pg</a>
+        }
+        @if (currentPage < totalPages)
+        {
+            var qNext = selected.HasValue ? $"?sourceId={selected}&page={currentPage + 1}" : $"?page={currentPage + 1}";
+            <a href="/News@(qNext)" class="btn btn-sm btn-outline-dark" style="border-radius:8px;">Siguiente →</a>
+        }
+        <small class="text-muted ms-2" style="font-size:.78rem;">Página @currentPage de @totalPages</small>
+    </div>
+}
+<!-- MODO LECTURA -->
+<div class="modal fade" id="modoLectura" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header" style="background:#1a2744;color:#fff;">
+                <div>
+                    <span class="badge bg-warning text-dark me-2" id="lr-fuente"></span>
+                    <small id="lr-fecha" class="text-light"></small>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <small class="text-light">Tamaño:</small>
+                    <button class="btn btn-sm btn-outline-light" onclick="cambiarFuente(-2)">A−</button>
+                    <button class="btn btn-sm btn-outline-light" onclick="cambiarFuente(2)">A+</button>
+                    <button type="button" class="btn-close btn-close-white ms-2" data-bs-dismiss="modal"></button>
+                </div>
+            </div>
+            <div class="modal-body px-4 py-4" id="lr-body">
+                <img id="lr-img" src="" alt="" style="width:100%;max-height:250px;object-fit:cover;border-radius:8px;margin-bottom:1rem;display:none;" />
+                <div class="text-center text-muted mb-3">
+                    <small>⏱️ Tiempo estimado: <strong id="lr-tiempo"></strong></small>
+                </div>
+                <h4 id="lr-titulo" class="fw-bold mb-3" style="line-height:1.4"></h4>
+                <p id="lr-desc" class="text-muted" style="line-height:1.8"></p>
+                <hr />
+                <div class="text-center">
+                    <a id="lr-url" href="#" target="_blank" class="btn btn-primary">🔗 Leer artículo completo</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var fontSize = 16;
+
+    function abrirLectura(titulo, desc, url, fuente, fecha, minutos, imgUrl) {
+        document.getElementById('lr-titulo').textContent = titulo;
+        document.getElementById('lr-desc').textContent = desc || 'Sin descripción disponible.';
+        document.getElementById('lr-url').href = url;
+        document.getElementById('lr-fuente').textContent = fuente;
+        document.getElementById('lr-fecha').textContent = fecha;
+        document.getElementById('lr-tiempo').textContent = minutos + ' min';
+        document.getElementById('lr-body').style.fontSize = fontSize + 'px';
+
+        var img = document.getElementById('lr-img');
+        if (imgUrl && imgUrl !== '') {
+            img.src = imgUrl;
+            img.style.display = 'block';
+            img.onerror = function () { this.style.display = 'none'; };
+        } else {
+            img.style.display = 'none';
+        }
+
+        new bootstrap.Modal(document.getElementById('modoLectura')).show();
+    }
+
+    function cambiarFuente(delta) {
+        fontSize = Math.min(24, Math.max(12, fontSize + delta));
+        document.getElementById('lr-body').style.fontSize = fontSize + 'px';
+    }
+</script>

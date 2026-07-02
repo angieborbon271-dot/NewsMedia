@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="NewsMedia.Business/NewsMedia.Business.csproj" Id="c4c80bb9-8030-4cea-b9f8-b923206ab6bd" />
+  <Project Path="NewsMedia.Data/NewsMedia.Data.csproj" Id="0b30784c-b47f-48ea-a251-c039929bc054" />
+  <Project Path="NewsMedia.Models/NewsMedia.Models.csproj" Id="5d1ed799-3c95-4046-bc8a-2a2c938176bf" />
+  <Project Path="NewsMedia.Mvc/NewsMedia.Mvc.csproj" />
+  <Project Path="NewsMedia.Repositories/NewsMedia.Repositories.csproj" Id="aea7a6c9-d752-413f-b70f-57e0f88e1268" />
+  <Project Path="NewsMedia/NewsMedia.Api.csproj" />
+</Solution>

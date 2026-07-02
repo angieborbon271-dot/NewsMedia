@@ -1,0 +1,171 @@
+﻿@{
+    ViewData["Title"] = "Crear cuenta";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .auth-wrap {
+        display: flex;
+        min-height: 70vh;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 0;
+    }
+
+    .auth-card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 4px 30px rgba(0,0,0,0.1);
+        overflow: hidden;
+        width: 100%;
+        max-width: 900px;
+        display: flex;
+    }
+
+    .auth-side {
+        background: linear-gradient(160deg,#1a1a2e 0%,#2c3e50 100%);
+        color: #fff;
+        padding: 3rem 2.5rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        min-width: 300px;
+    }
+
+        .auth-side .brand {
+            font-family: 'Playfair Display',serif;
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+            .auth-side .brand span {
+                color: #c0392b;
+            }
+
+        .auth-side .tagline {
+            font-size: .65rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,.4);
+            margin-bottom: 1.5rem;
+        }
+
+        .auth-side .bullet {
+            display: flex;
+            align-items: flex-start;
+            gap: .7rem;
+            margin-bottom: .8rem;
+            font-size: .85rem;
+            color: rgba(255,255,255,.7);
+        }
+
+    .auth-form {
+        padding: 3rem 2.5rem;
+        flex: 1;
+    }
+
+        .auth-form h4 {
+            font-family: 'Playfair Display',serif;
+            font-size: 1.6rem;
+            color: #1a1a2e;
+            margin-bottom: .4rem;
+        }
+
+        .auth-form .sub {
+            color: #888;
+            font-size: .85rem;
+            margin-bottom: 2rem;
+        }
+
+    .form-control {
+        border-radius: 8px;
+        border: 1.5px solid #e5e5e5;
+        padding: .65rem .9rem;
+        font-size: .9rem;
+        transition: all .2s;
+    }
+
+        .form-control:focus {
+            border-color: #1a1a2e;
+            box-shadow: 0 0 0 3px rgba(26,26,46,.08);
+        }
+
+    .btn-submit {
+        background: #c0392b;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: .75rem;
+        font-weight: 700;
+        font-size: .95rem;
+        width: 100%;
+        transition: all .2s;
+    }
+
+        .btn-submit:hover {
+            background: #a93226;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(192,57,43,.35);
+        }
+
+    @@media(max-width:640px) {
+        .auth-side {
+            display: none;
+        }
+
+        .auth-form {
+            padding: 2rem;
+        }
+    }
+</style>
+
+<div class="auth-wrap">
+    <div class="auth-card">
+        <div class="auth-side">
+            <div class="brand">News<span>Media</span></div>
+            <div class="tagline">Tu portal de noticias</div>
+            <div class="bullet">📰 Accede a noticias de NYT, BBC, El País y más</div>
+            <div class="bullet">🔖 Crea tu biblioteca personal de artículos</div>
+            <div class="bullet">📤 Exporta e importa en formato JSON</div>
+            <div class="bullet">📖 Lee sin distracciones con Modo Lectura</div>
+        </div>
+        <div class="auth-form">
+            <h4>Crear cuenta</h4>
+            <p class="sub">Regístrate gratis y empieza a leer ahora</p>
+
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger border-0 mb-3" style="border-radius:8px;font-size:.88rem;">
+                    ⚠️ @ViewBag.Error
+                </div>
+            }
+
+            <form method="post" action="/Auth/Register">
+                <div class="row mb-3">
+                    <div class="col">
+                        <label class="form-label" style="font-size:.85rem;font-weight:600;color:#333;">Nombre</label>
+                        <input type="text" name="firstName" class="form-control" placeholder="Juan" required />
+                    </div>
+                    <div class="col">
+                        <label class="form-label" style="font-size:.85rem;font-weight:600;color:#333;">Apellido</label>
+                        <input type="text" name="lastName" class="form-control" placeholder="Pérez" required />
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" style="font-size:.85rem;font-weight:600;color:#333;">Correo electrónico</label>
+                    <input type="email" name="email" class="form-control" placeholder="tu@correo.com" required />
+                </div>
+                <div class="mb-4">
+                    <label class="form-label" style="font-size:.85rem;font-weight:600;color:#333;">Contraseña</label>
+                    <input type="password" name="password" class="form-control" placeholder="Mínimo 6 caracteres" required />
+                </div>
+                <button type="submit" class="btn-submit">Crear cuenta gratis</button>
+            </form>
+
+            <hr style="margin:1.8rem 0;border-color:#f0f0f0;" />
+            <p class="text-center mb-0" style="font-size:.88rem;color:#888;">
+                ¿Ya tienes cuenta? <a href="/Auth/Login" style="color:#c0392b;font-weight:600;text-decoration:none;">Inicia sesión</a>
+            </p>
+        </div>
+    </div>
+</div>

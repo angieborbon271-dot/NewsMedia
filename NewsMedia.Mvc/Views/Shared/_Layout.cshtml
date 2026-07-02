@@ -1,0 +1,341 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — NewsMedia</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <style>
+            *, body {
+                font-family: 'Inter', sans-serif;
+            }
+
+            html, body {
+                height: 100%;
+            }
+
+            body {
+                background: #f4f4f6;
+                display: flex;
+                flex-direction: column;
+                min-height: 100vh;
+            }
+
+            main {
+                flex: 1;
+            }
+
+            h1, h2, h3, h4, h5 {
+                font-family: 'Playfair Display', serif;
+            }
+
+            .top-bar {
+                background: #c0392b;
+                color: #fff;
+                font-size: .78rem;
+                padding: 5px 0;
+                font-weight: 500;
+            }
+
+                .top-bar a {
+                    color: rgba(255,255,255,.85);
+                    text-decoration: none;
+                }
+
+                    .top-bar a:hover {
+                        color: #fff;
+                    }
+
+            .brand-bar {
+                background: #fff;
+                border-bottom: 3px solid #c0392b;
+                padding: 14px 0 10px;
+            }
+
+            .brand-name {
+                font-family: 'Playfair Display', serif;
+                font-size: 2.2rem;
+                font-weight: 800;
+                color: #1a1a2e;
+                text-decoration: none;
+                letter-spacing: -1px;
+            }
+
+                .brand-name span {
+                    color: #c0392b;
+                }
+
+            .brand-tagline {
+                font-size: .75rem;
+                color: #888;
+                letter-spacing: 1.5px;
+                text-transform: uppercase;
+            }
+
+            .main-nav {
+                background: #1a1a2e;
+            }
+
+                .main-nav .nav-link {
+                    color: rgba(255,255,255,.8) !important;
+                    font-size: .82rem;
+                    font-weight: 600;
+                    letter-spacing: .5px;
+                    text-transform: uppercase;
+                    padding: 10px 16px !important;
+                    border-bottom: 3px solid transparent;
+                    transition: all .2s;
+                }
+
+                    .main-nav .nav-link:hover {
+                        color: #fff !important;
+                        border-bottom-color: #c0392b;
+                        background: rgba(255,255,255,.05);
+                    }
+
+                    .main-nav .nav-link.admin-link {
+                        color: #f0c040 !important;
+                    }
+
+            .user-pill {
+                background: rgba(255,255,255,.1);
+                border-radius: 20px;
+                padding: 5px 14px;
+                font-size: .82rem;
+                color: #fff !important;
+                font-weight: 500;
+                cursor: pointer;
+                border: 1px solid rgba(255,255,255,.2);
+            }
+
+                .user-pill:hover {
+                    background: rgba(255,255,255,.18) !important;
+                }
+
+            .dropdown-menu {
+                border: none;
+                box-shadow: 0 8px 30px rgba(0,0,0,.15);
+                border-radius: 10px;
+                padding: 6px;
+                min-width: 230px;
+            }
+
+            .dropdown-item {
+                border-radius: 7px;
+                font-size: .88rem;
+                padding: 8px 12px;
+                font-weight: 500;
+            }
+
+                .dropdown-item:hover {
+                    background: #f5f5f5;
+                }
+
+                .dropdown-item.text-danger:hover {
+                    background: #fff5f5;
+                }
+
+            .user-avatar {
+                width: 26px;
+                height: 26px;
+                background: #c0392b;
+                border-radius: 50%;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 700;
+                font-size: .75rem;
+                color: #fff;
+            }
+
+            .alert {
+                border: none;
+                border-radius: 8px;
+                font-size: .88rem;
+                border-left: 4px solid;
+            }
+
+            .alert-success {
+                background: #f0faf5;
+                color: #1a6b3a;
+                border-left-color: #27ae60;
+            }
+
+            .alert-danger {
+                background: #fef5f5;
+                color: #922b21;
+                border-left-color: #c0392b;
+            }
+
+            footer {
+                background: #1a1a2e;
+                color: rgba(255,255,255,.45);
+                font-size: .78rem;
+                margin-top: auto;
+            }
+
+            .footer-top {
+                border-bottom: 1px solid rgba(255,255,255,.08);
+                padding: 28px 0 22px;
+            }
+
+            .footer-logo {
+                font-family: 'Playfair Display', serif;
+                font-size: 1.4rem;
+                font-weight: 800;
+                color: #fff;
+            }
+
+                .footer-logo span {
+                    color: #c0392b;
+                }
+
+            footer a {
+                color: rgba(255,255,255,.4);
+                text-decoration: none;
+            }
+
+                footer a:hover {
+                    color: rgba(255,255,255,.8);
+                }
+
+            .footer-link-group h6 {
+                color: rgba(255,255,255,.7);
+                font-size: .72rem;
+                font-weight: 700;
+                letter-spacing: 1.5px;
+                text-transform: uppercase;
+                margin-bottom: .8rem;
+            }
+
+            .footer-link-group a {
+                display: block;
+                margin-bottom: .4rem;
+                font-size: .82rem;
+            }
+    </style>
+</head>
+<body>
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <div class="container d-flex justify-content-between align-items-center">
+            <span>📅 @DateTime.Now.ToString("dddd, dd 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("es-ES"))</span>
+            <span>NewsMedia — AMBA</span>
+        </div>
+    </div>
+
+    <!-- BRAND BAR -->
+    <div class="brand-bar">
+        <div class="container d-flex align-items-center justify-content-between">
+            <div>
+                <a class="brand-name" href="/">News<span>Media</span></a>
+                <div class="brand-tagline">Tu portal de noticias</div>
+            </div>
+            @if (Context.Session.GetString("UserEmail") == null)
+            {
+                <div class="d-flex gap-2">
+                    <a href="/Auth/Login" class="btn btn-outline-secondary btn-sm px-3" style="border-radius:20px;font-size:.82rem;">Iniciar sesión</a>
+                    <a href="/Auth/Register" class="btn btn-sm px-3 text-white fw-bold"
+                       style="background:#c0392b;border-radius:20px;font-size:.82rem;border:none;">Registrarse</a>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- MAIN NAV -->
+    <nav class="main-nav">
+        <div class="container d-flex justify-content-between align-items-center">
+            <ul class="nav">
+                @if (Context.Session.GetString("UserEmail") != null)
+                {
+                    <li><a class="nav-link" href="/News">Noticias</a></li>
+                    <li><a class="nav-link" href="/Saved">Mis Guardados</a></li>
+                    @if (Context.Session.GetString("UserRole") == "admin")
+                    {
+                        <li><a class="nav-link admin-link" href="/Admin/Sources">⚙ Fuentes</a></li>
+                        <li><a class="nav-link admin-link" href="/Admin/Config">⚙ Configuración</a></li>
+                    }
+                }
+                else
+                {
+                    <li><a class="nav-link" href="/">Inicio</a></li>
+                }
+            </ul>
+            @if (Context.Session.GetString("UserEmail") != null)
+            {
+                <div class="dropdown py-1">
+                    <a class="nav-link user-pill dropdown-toggle d-flex align-items-center gap-2"
+                       href="#" role="button" data-bs-toggle="dropdown">
+                        <span class="user-avatar">
+                            @(Context.Session.GetString("UserEmail")?[0].ToString().ToUpper() ?? "U")
+                        </span>
+                        @{
+                            var _name = Context.Session.GetString("UserName");
+                            var _email = Context.Session.GetString("UserEmail") ?? "";
+                            var _display = string.IsNullOrEmpty(_name) ? _email : _name;
+                        }
+                        <span style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                            @_display
+                        </span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <div style="padding:10px 12px 6px;">
+                                <div style="font-weight:600;font-size:.9rem;color:#1a1a2e;">@Context.Session.GetString("UserName")</div>
+                                <div style="font-size:.78rem;color:#888;">@Context.Session.GetString("UserEmail")</div>
+                                <span class="badge mt-1"
+                                      style="background:@(Context.Session.GetString("UserRole") == "admin" ? "#c0392b" : "#555");font-size:.68rem;">
+                                    @Context.Session.GetString("UserRole")?.ToUpper()
+                                </span>
+                            </div>
+                        </li>
+                        <li><hr class="dropdown-divider my-1" /></li>
+                        <li><a class="dropdown-item" href="/Auth/ChangePassword">🔒 Cambiar contraseña</a></li>
+                        <li><hr class="dropdown-divider my-1" /></li>
+                        <li><a class="dropdown-item text-danger" href="/Auth/Logout">🚪 Cerrar sesión</a></li>
+                    </ul>
+                </div>
+            }
+        </div>
+    </nav>
+
+    <!-- CONTENIDO -->
+    <main class="container py-4">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show mb-3">
+                @TempData["Success"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show mb-3">
+                @TempData["Error"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+        @RenderBody()
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-top">
+            <div class="container text-center">
+                <div class="footer-logo mb-2">News<span>Media</span></div>
+                <p style="font-size:.83rem;margin:0;">
+                    Agregador de noticias multifuente · AMBA
+                </p>
+            </div>
+        </div>
+        <div class="container py-3 text-center">
+            <span>&copy; @DateTime.Now.Year NewsMedia — Todos los derechos reservados.</span>
+            <span class="mx-2" style="color:rgba(255,255,255,.2);">·</span>
+            <span style="font-size:.72rem;">AMBA </span>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,189 @@
+﻿@model List<NewsMedia.Models.Source>
+@{
+    ViewData["Title"] = "Gestión de Fuentes";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .admin-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.8rem; flex-wrap:wrap; gap:1rem; }
+    .admin-title { font-family:'Playfair Display',serif; font-size:1.8rem; color:#1a1a2e; margin:0; }
+    .admin-subtitle { font-size:.82rem; color:#888; margin:0; }
+    .btn-add { background:#c0392b; color:#fff; border:none; border-radius:8px; padding:9px 22px; font-weight:600; font-size:.88rem; transition:all .2s; }
+    .btn-add:hover { background:#a93226; color:#fff; transform:translateY(-1px); }
+    .sources-table { background:#fff; border-radius:12px; box-shadow:0 2px 12px rgba(0,0,0,.07); overflow:hidden; }
+    .sources-table thead th { background:#1a1a2e; color:#fff; font-size:.75rem; font-weight:600; letter-spacing:.5px; text-transform:uppercase; padding:12px 16px; border:none; }
+    .sources-table tbody td { padding:13px 16px; vertical-align:middle; border-color:#f0f0f0; font-size:.88rem; }
+    .sources-table tbody tr:hover { background:#f9f9fb; }
+    .type-badge { border-radius:6px; font-size:.72rem; font-weight:700; padding:3px 10px; text-transform:uppercase; letter-spacing:.5px; }
+    .type-rss { background:#e8f5e9; color:#2e7d32; }
+    .type-json { background:#e3f2fd; color:#1565c0; }
+    .type-html { background:#fff3e0; color:#e65100; }
+    .type-api { background:#f3e5f5; color:#6a1b9a; }
+    .modal-header-dark { background:#1a1a2e; color:#fff; border:none; border-radius:0; }
+    .modal-content { border:none; border-radius:14px; overflow:hidden; }
+    .form-label { font-size:.82rem; font-weight:600; color:#333; }
+    .form-control, .form-select { border-radius:8px; border:1.5px solid #e5e5e5; font-size:.88rem; }
+    .form-control:focus, .form-select:focus { border-color:#1a1a2e; box-shadow:0 0 0 3px rgba(26,26,46,.08); }
+    .empty-state { text-align:center; padding:4rem; color:#aaa; }
+    .empty-state .icon { font-size:3rem; margin-bottom:1rem; }
+</style>
+
+<div class="admin-header">
+    <div>
+        <h2 class="admin-title">⚙️ Gestión de Fuentes</h2>
+        <p class="admin-subtitle">@Model.Count fuente@(Model.Count != 1 ? "s" : "") configurada@(Model.Count != 1 ? "s" : "")</p>
+    </div>
+    <button class="btn-add" data-bs-toggle="modal" data-bs-target="#addModal">+ Nueva Fuente</button>
+</div>
+
+<div class="sources-table table-responsive">
+    <table class="table mb-0">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>URL</th>
+                <th>Tipo</th>
+                <th>Secret</th>
+                <th style="width:100px;">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr><td colspan="5">
+                    <div class="empty-state">
+                        <div class="icon">📡</div>
+                        <p>No hay fuentes configuradas. Agrega la primera.</p>
+                    </div>
+                </td></tr>
+            }
+            @foreach (var src in Model)
+            {
+                <tr>
+                    <td class="fw-bold" style="color:#1a1a2e;">@src.Name</td>
+                    <td>
+                        <a href="@src.Url" target="_blank" class="text-muted text-decoration-none"
+                           style="font-size:.8rem;max-width:200px;display:inline-block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:middle;">
+                            🔗 @src.Url
+                        </a>
+                    </td>
+                    <td>
+                        <span class="type-badge type-@src.ComponentType">@src.ComponentType</span>
+                    </td>
+                    <td>
+                        @if (src.RequiresSecret)
+                        {
+                            <span class="badge" style="background:#fff3cd;color:#856404;border-radius:6px;font-size:.72rem;">🔑 Sí</span>
+                        }
+                        else
+                        {
+                            <span style="color:#aaa;font-size:.82rem;">—</span>
+                        }
+                    </td>
+                    <td>
+                        <div class="d-flex gap-1">
+                            <button class="btn btn-sm btn-outline-secondary" style="border-radius:6px;font-size:.78rem;"
+                                    data-bs-toggle="modal" data-bs-target="#editModal-@src.Id">✏️</button>
+                            <form method="post" action="/Admin/DeleteSource" class="d-inline">
+                                <input type="hidden" name="id" value="@src.Id" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger" style="border-radius:6px;font-size:.78rem;"
+                                        onclick="return confirm('¿Eliminar «@src.Name»?')">🗑️</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+
+                <div class="modal fade" id="editModal-@src.Id" tabindex="-1">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header modal-header-dark">
+                                <h5 class="modal-title">✏️ Editar: @src.Name</h5>
+                                <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+                            <form method="post" action="/Admin/UpdateSource">
+                                <input type="hidden" name="id" value="@src.Id" />
+                                <div class="modal-body px-4 py-3">
+                                    <div class="mb-3">
+                                        <label class="form-label">Nombre</label>
+                                        <input name="name" value="@src.Name" class="form-control" required />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">URL del feed</label>
+                                        <input name="url" value="@src.Url" class="form-control" required />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Descripción</label>
+                                        <input name="description" value="@src.Description" class="form-control" />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Tipo de fuente</label>
+                                        <select name="componentType" class="form-select">
+                                            <option value="rss" selected="@(src.ComponentType == "rss")">RSS</option>
+                                            <option value="json" selected="@(src.ComponentType == "json")">JSON</option>
+                                            <option value="html" selected="@(src.ComponentType == "html")">HTML</option>
+                                            <option value="api" selected="@(src.ComponentType == "api")">API</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-check">
+                                        <input type="checkbox" name="requiresSecret" value="true"
+                                               class="form-check-input" @(src.RequiresSecret?"checked":"") />
+                                        <label class="form-check-label" style="font-size:.88rem;">Requiere Secret (API Key)</label>
+                                    </div>
+                                </div>
+                                <div class="modal-footer border-0 pt-0">
+                                    <button class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+                                    <button type="submit" class="btn btn-sm text-white fw-bold"
+                                            style="background:#1a1a2e;border-radius:8px;">Guardar cambios</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="modal fade" id="addModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header modal-header-dark">
+                <h5 class="modal-title">➕ Nueva Fuente</h5>
+                <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="/Admin/CreateSource">
+                <div class="modal-body px-4 py-3">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre</label>
+                        <input name="name" class="form-control" placeholder="Ej: Reuters" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">URL del feed</label>
+                        <input name="url" class="form-control" placeholder="https://feeds.ejemplo.com/rss" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descripción <span class="text-muted fw-normal">(opcional)</span></label>
+                        <input name="description" class="form-control" placeholder="Agencia de noticias internacional" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tipo de fuente</label>
+                        <select name="componentType" class="form-select">
+                            <option value="rss">RSS</option>
+                            <option value="json">JSON</option>
+                            <option value="html">HTML</option>
+                            <option value="api">API</option>
+                        </select>
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" name="requiresSecret" value="true" class="form-check-input" />
+                        <label class="form-check-label" style="font-size:.88rem;">Requiere Secret (API Key)</label>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-sm text-white fw-bold"
+                            style="background:#c0392b;border-radius:8px;">Crear fuente</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

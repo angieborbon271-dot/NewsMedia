@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\NewsMedia.Models\NewsMedia.Models.csproj" />
+    <ProjectReference Include="..\NewsMedia.Data\NewsMedia.Data.csproj" />
+    <ProjectReference Include="..\NewsMedia.Repositories\NewsMedia.Repositories.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

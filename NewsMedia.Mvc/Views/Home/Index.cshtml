@@ -1,0 +1,328 @@
+﻿@{
+    ViewData["Title"] = "Inicio";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var isLogged = Context.Session.GetString("UserEmail") != null;
+}
+<style>
+    .hero-section {
+        background: #1a1a2e;
+        border-radius: 14px;
+        overflow: hidden;
+        margin-bottom: 2.5rem;
+        position: relative;
+    }
+
+    .hero-inner {
+        padding: 4.5rem 3.5rem;
+        background: linear-gradient(120deg,#1a1a2e 55%,rgba(192,57,43,.18) 100%);
+        position: relative;
+        z-index: 1;
+    }
+
+    .breaking-tag {
+        display: inline-block;
+        background: #c0392b;
+        color: #fff;
+        font-size: .68rem;
+        font-weight: 800;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        padding: 4px 14px;
+        border-radius: 3px;
+        margin-bottom: 1.2rem;
+    }
+
+    .hero-title {
+        font-family: 'Playfair Display',serif;
+        font-size: 3.2rem;
+        font-weight: 800;
+        line-height: 1.1;
+        color: #fff;
+        margin-bottom: 1.2rem;
+    }
+
+    .hero-sub {
+        color: rgba(255,255,255,.6);
+        font-size: 1rem;
+        max-width: 500px;
+        line-height: 1.7;
+        margin-bottom: 2rem;
+    }
+
+    .btn-red {
+        background: #c0392b;
+        color: #fff !important;
+        border: none;
+        border-radius: 8px;
+        padding: 11px 30px;
+        font-weight: 600;
+        text-decoration: none;
+        font-size: .92rem;
+        transition: all .2s;
+        display: inline-block;
+    }
+
+        .btn-red:hover {
+            background: #a93226;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(192,57,43,.35);
+        }
+
+    .btn-ghost {
+        background: transparent;
+        color: #fff !important;
+        border: 2px solid rgba(255,255,255,.25);
+        border-radius: 8px;
+        padding: 11px 30px;
+        font-weight: 600;
+        text-decoration: none;
+        font-size: .92rem;
+        transition: all .2s;
+        display: inline-block;
+    }
+
+        .btn-ghost:hover {
+            background: rgba(255,255,255,.08);
+            border-color: rgba(255,255,255,.5);
+        }
+
+    .stat-bar {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 16px rgba(0,0,0,.07);
+        padding: 1.6rem 2.5rem;
+        margin-bottom: 3rem;
+    }
+
+    .stat-num {
+        font-family: 'Playfair Display',serif;
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: #1a1a2e;
+        display: block;
+        line-height: 1;
+    }
+
+    .stat-lbl {
+        font-size: .73rem;
+        color: #999;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-top: 4px;
+        display: block;
+    }
+
+    .stat-div {
+        border-left: 1px solid #eee;
+    }
+
+    .section-title {
+        font-size: .7rem;
+        font-weight: 800;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        color: #c0392b;
+        border-left: 3px solid #c0392b;
+        padding-left: 10px;
+        margin-bottom: 1.5rem;
+    }
+
+    .feature-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 2rem 1.6rem;
+        border-top: 3px solid transparent;
+        transition: all .25s;
+        box-shadow: 0 2px 10px rgba(0,0,0,.05);
+        height: 100%;
+    }
+
+        .feature-card:hover {
+            border-top-color: #c0392b;
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(0,0,0,.1);
+        }
+
+    .feature-icon {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        display: block;
+    }
+
+    .feature-card h5 {
+        font-family: 'Playfair Display',serif;
+        font-size: 1.05rem;
+        font-weight: 700;
+        margin-bottom: .5rem;
+        color: #1a1a2e;
+    }
+
+    .feature-card p {
+        font-size: .85rem;
+        color: #777;
+        line-height: 1.65;
+        margin: 0;
+    }
+
+    .sources-strip {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,.05);
+        padding: 2rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .source-badge {
+        background: #f4f4f6;
+        border-radius: 30px;
+        padding: 8px 20px;
+        font-size: .85rem;
+        font-weight: 600;
+        color: #1a1a2e;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all .2s;
+        cursor: default;
+    }
+
+        .source-badge:hover {
+            background: #1a1a2e;
+            color: #fff;
+        }
+
+    .cta-strip {
+        background: linear-gradient(135deg,#1a1a2e 0%,#2c3e50 100%);
+        border-radius: 14px;
+        padding: 3rem;
+        text-align: center;
+        color: #fff;
+        margin-bottom: 2rem;
+    }
+
+        .cta-strip h3 {
+            font-family: 'Playfair Display',serif;
+            font-size: 1.8rem;
+            margin-bottom: .8rem;
+        }
+
+        .cta-strip p {
+            color: rgba(255,255,255,.6);
+            margin-bottom: 1.5rem;
+            font-size: .95rem;
+        }
+</style>
+
+<!-- HERO -->
+<div class="hero-section">
+    <div class="hero-inner">
+        <span class="breaking-tag">📡 Actualización en tiempo real</span>
+        <h1 class="hero-title">Toda la información<br />que necesitas,<br />en un solo lugar.</h1>
+        <p class="hero-sub">
+            Lee artículos de múltiples fuentes internacionales, guárdalos y compártelos.
+            Contenido actualizado desde NYT, BBC, El País, TechCrunch y más.
+        </p>
+        <div class="d-flex gap-3 flex-wrap">
+            @if (isLogged)
+            {
+                <a href="/News" class="btn-red">📰 Ver Noticias</a>
+                <a href="/Saved" class="btn-ghost">🔖 Mis Guardados</a>
+            }
+            else
+            {
+                <a href="/Auth/Register" class="btn-red">Empezar gratis</a>
+                <a href="/Auth/Login" class="btn-ghost">Iniciar sesión</a>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- STATS -->
+<div class="stat-bar">
+    <div class="row g-0 text-center">
+        <div class="col-4">
+            <span class="stat-num">4+</span>
+            <span class="stat-lbl">Fuentes activas</span>
+        </div>
+        <div class="col-4 stat-div">
+            <span class="stat-num" style="font-size:1.3rem;line-height:1.3;">RSS · JSON<br />HTML · API</span>
+            <span class="stat-lbl">Tipos soportados</span>
+        </div>
+        <div class="col-4 stat-div">
+            <span class="stat-num">∞</span>
+            <span class="stat-lbl">Artículos disponibles</span>
+        </div>
+    </div>
+</div>
+
+<!-- FUENTES -->
+<p class="section-title">Fuentes de noticias</p>
+<div class="sources-strip">
+    <p class="text-muted small mb-3">Contenido actualizado en tiempo real desde las principales redacciones del mundo:</p>
+    <div class="d-flex flex-wrap gap-2">
+        <span class="source-badge">🗞️ The New York Times</span>
+        <span class="source-badge">📻 BBC Mundo</span>
+        <span class="source-badge">🌎 El País</span>
+        <span class="source-badge">💻 TechCrunch</span>
+        <span class="source-badge" style="background:#fff0ee;color:#c0392b;">+ Agrega las tuyas</span>
+    </div>
+</div>
+
+<!-- FUNCIONALIDADES -->
+<p class="section-title">¿Qué puedes hacer?</p>
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="feature-card">
+            <span class="feature-icon">🌐</span>
+            <h5>Múltiples Fuentes</h5>
+            <p>Conecta RSS, JSON, HTML y APIs externas. Todo el contenido en un solo portal, actualizado automáticamente.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="feature-card">
+            <span class="feature-icon">🔖</span>
+            <h5>Guarda Artículos</h5>
+            <p>Marca los artículos que te interesan y accede a tu colección personal en cualquier momento.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="feature-card">
+            <span class="feature-icon">📤</span>
+            <h5>Exporta e Importa</h5>
+            <p>Descarga tus artículos en JSON y compártelos con otros usuarios de cualquier app compatible.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="feature-card">
+            <span class="feature-icon">📖</span>
+            <h5>Modo Lectura</h5>
+            <p>Vista limpia sin distracciones, con imagen del artículo y tamaño de texto ajustable.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="feature-card">
+            <span class="feature-icon">🔐</span>
+            <h5>Acceso Seguro</h5>
+            <p>Autenticación con ASP.NET Identity. Tu contenido guardado es privado y protegido.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="feature-card">
+            <span class="feature-icon">⚙️</span>
+            <h5>Panel Admin</h5>
+            <p>Gestión completa de fuentes, roles de usuario y configuración de secretos del sistema.</p>
+        </div>
+    </div>
+</div>
+
+@if (!isLogged)
+{
+    <div class="cta-strip">
+        <h3>Empieza a leer las noticias que importan</h3>
+        <p>Crea tu cuenta gratis y accede a contenido de todo el mundo en segundos.</p>
+        <div class="d-flex gap-3 justify-content-center">
+            <a href="/Auth/Register" class="btn-red">Crear cuenta gratis</a>
+            <a href="/Auth/Login" class="btn-ghost">Ya tengo cuenta</a>
+        </div>
+    </div>
+}
