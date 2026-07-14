@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using NewsMedia.Api.Services;
 using NewsMedia.Models;
 
 namespace NewsMedia.Api.Controllers
@@ -10,11 +11,13 @@ namespace NewsMedia.Api.Controllers
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
+        private readonly ITokenService _tokenService;
 
-        public AuthController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
+        public AuthController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ITokenService tokenService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _tokenService = tokenService;
         }
 
         [HttpPost("register")]
@@ -43,13 +46,17 @@ namespace NewsMedia.Api.Controllers
             if (!result.Succeeded) return Unauthorized(new { message = "Credenciales incorrectas" });
 
             await _signInManager.SignInAsync(user, isPersistent: false);
+
+            var token = _tokenService.GenerateToken(user);
+
             return Ok(new
             {
                 id = user.Id,
                 email = user.Email,
                 role = user.Role,
                 firstName = user.FirstName,
-                lastName = user.LastName
+                lastName = user.LastName,
+                token
             });
         }
 
