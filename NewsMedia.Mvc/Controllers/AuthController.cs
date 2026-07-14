@@ -32,10 +32,12 @@ namespace NewsMedia.Mvc.Controllers
                     var id = data.TryGetProperty("id", out var uid) ? uid.GetString() ?? "" : "";
                     var role = data.TryGetProperty("role", out var r) ? r.GetString() ?? "viewer" : "viewer";
                     var firstName = data.TryGetProperty("firstName", out var fn) ? fn.GetString() ?? "" : "";
+                    var token = data.TryGetProperty("token", out var t) ? t.GetString() ?? "" : "";
                     HttpContext.Session.SetString("UserId", id);
                     HttpContext.Session.SetString("UserEmail", email);
                     HttpContext.Session.SetString("UserRole", role);
                     HttpContext.Session.SetString("UserName", firstName);
+                    HttpContext.Session.SetString("Token", token);
                     return RedirectToAction("Index", "Home");
                 }
             }
