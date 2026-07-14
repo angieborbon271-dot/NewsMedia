@@ -10,10 +10,10 @@ namespace NewsMedia.Api.Controllers
     [Route("api/fetch")]
     public class FetchController : ControllerBase
     {
-        private readonly SourceBusiness _sourceBusiness;
+        private readonly ISourceBusiness _sourceBusiness;
         private readonly IHttpClientFactory _httpFactory;
 
-        public FetchController(SourceBusiness sourceBusiness, IHttpClientFactory httpFactory)
+        public FetchController(ISourceBusiness sourceBusiness, IHttpClientFactory httpFactory)
         {
             _sourceBusiness = sourceBusiness;
             _httpFactory = httpFactory;

@@ -233,6 +233,33 @@ namespace NewsMedia.Data.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("NewsMedia.Models.Collection", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OwnerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Collections");
+                });
+
             modelBuilder.Entity("NewsMedia.Models.Setting", b =>
                 {
                     b.Property<int>("Id")
@@ -308,6 +335,9 @@ namespace NewsMedia.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("CollectionId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -322,6 +352,8 @@ namespace NewsMedia.Data.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CollectionId");
 
                     b.HasIndex("SourceId");
 
@@ -381,13 +413,25 @@ namespace NewsMedia.Data.Migrations
 
             modelBuilder.Entity("NewsMedia.Models.SourceItem", b =>
                 {
+                    b.HasOne("NewsMedia.Models.Collection", "Collection")
+                        .WithMany("Items")
+                        .HasForeignKey("CollectionId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("NewsMedia.Models.Source", "Source")
                         .WithMany("SourceItems")
                         .HasForeignKey("SourceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Collection");
+
                     b.Navigation("Source");
+                });
+
+            modelBuilder.Entity("NewsMedia.Models.Collection", b =>
+                {
+                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("NewsMedia.Models.Source", b =>

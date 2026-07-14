@@ -5,12 +5,12 @@ using System.Xml.Linq;
 
 namespace NewsMedia.Business
 {
-    public class SourceBusiness
+    public class SourceBusiness : ISourceBusiness
     {
-        private readonly SourceRepository _repo;
+        private readonly ISourceRepository _repo;
         private readonly HttpClient _http = new HttpClient();
 
-        public SourceBusiness(SourceRepository repo)
+        public SourceBusiness(ISourceRepository repo)
         {
             _repo = repo;
         }

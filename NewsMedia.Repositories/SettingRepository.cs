@@ -4,7 +4,7 @@ using NewsMedia.Models;
 
 namespace NewsMedia.Repositories
 {
-    public class SettingRepository
+    public class SettingRepository : ISettingRepository
     {
         private readonly AppDbContext _context;
 

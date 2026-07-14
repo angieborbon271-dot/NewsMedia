@@ -4,6 +4,7 @@ using NewsMedia.Data;
 using NewsMedia.Models;
 using NewsMedia.Repositories;
 using NewsMedia.Business;
+using NewsMedia.Api;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,13 +27,13 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<AppDbContext>()
 .AddDefaultTokenProviders();
 
-builder.Services.AddScoped<SourceRepository>();
-builder.Services.AddScoped<SourceItemRepository>();
-builder.Services.AddScoped<SettingRepository>();
+builder.Services.AddScoped<ISourceRepository, SourceRepository>();
+builder.Services.AddScoped<ISourceItemRepository, SourceItemRepository>();
+builder.Services.AddScoped<ISettingRepository, SettingRepository>();
 
-builder.Services.AddScoped<SourceBusiness>();
-builder.Services.AddScoped<SourceItemBusiness>();
-builder.Services.AddScoped<SettingBusiness>();
+builder.Services.AddScoped<ISourceBusiness, SourceBusiness>();
+builder.Services.AddScoped<ISourceItemBusiness, SourceItemBusiness>();
+builder.Services.AddScoped<ISettingBusiness, SettingBusiness>();
 
 builder.Services.AddCors(options =>
 {
@@ -55,5 +56,10 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    await DbSeeder.SeedAsync(scope.ServiceProvider);
+}
 
 app.Run();

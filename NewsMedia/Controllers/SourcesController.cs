@@ -8,8 +8,8 @@ namespace NewsMedia.Api.Controllers
     [Route("api/sources")]
     public class SourcesController : ControllerBase
     {
-        private readonly SourceBusiness _business;
-        public SourcesController(SourceBusiness business) => _business = business;
+        private readonly ISourceBusiness _business;
+        public SourcesController(ISourceBusiness business) => _business = business;
 
         [HttpGet]
         public async Task<IActionResult> GetAll() => Ok(await _business.GetAllAsync());
