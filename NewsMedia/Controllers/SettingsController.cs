@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using NewsMedia.Business;
 using NewsMedia.Models;
 
@@ -11,9 +12,11 @@ namespace NewsMedia.Api.Controllers
         private readonly ISettingBusiness _business;
         public SettingsController(ISettingBusiness business) => _business = business;
 
+        [Authorize(Roles = "admin")]
         [HttpGet]
         public async Task<IActionResult> GetAll() => Ok(await _business.GetAllAsync());
 
+        [Authorize(Roles = "admin")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] Setting setting)
         {
@@ -21,6 +24,7 @@ namespace NewsMedia.Api.Controllers
             return Ok(created);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] Setting setting)
         {
@@ -28,6 +32,7 @@ namespace NewsMedia.Api.Controllers
             return updated == null ? NotFound() : Ok(updated);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

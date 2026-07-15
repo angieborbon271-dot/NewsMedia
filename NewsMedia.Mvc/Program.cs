@@ -1,11 +1,17 @@
+using NewsMedia.Mvc.Handlers;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddTransient<AuthTokenHandler>();
+
 builder.Services.AddHttpClient("Api", client =>
 {
     client.BaseAddress = new Uri("https://localhost:7233/");
-});
+})
+.AddHttpMessageHandler<AuthTokenHandler>();
 
 builder.Services.AddSession(options =>
 {

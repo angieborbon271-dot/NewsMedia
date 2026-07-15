@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using NewsMedia.Business;
 using NewsMedia.Models;
 
@@ -30,6 +31,7 @@ namespace NewsMedia.Api.Controllers
             return Ok(items);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] Source source)
         {
@@ -37,6 +39,7 @@ namespace NewsMedia.Api.Controllers
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] Source source)
         {
@@ -44,6 +47,7 @@ namespace NewsMedia.Api.Controllers
             return updated == null ? NotFound() : Ok(updated);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

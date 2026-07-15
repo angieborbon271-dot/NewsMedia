@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NewsMedia.Models;
@@ -12,6 +13,7 @@ namespace NewsMedia.Api.Controllers
         private readonly UserManager<AppUser> _userManager;
         public UsersController(UserManager<AppUser> userManager) => _userManager = userManager;
 
+        [Authorize(Roles = "admin")]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -21,6 +23,7 @@ namespace NewsMedia.Api.Controllers
             return Ok(users);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPut("{id}/role")]
         public async Task<IActionResult> UpdateRole(string id, [FromBody] string role)
         {
@@ -30,6 +33,7 @@ namespace NewsMedia.Api.Controllers
             await _userManager.UpdateAsync(user);
             return Ok(new { message = "Rol actualizado" });
         }
+        [Authorize(Roles = "admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(string id)
         {

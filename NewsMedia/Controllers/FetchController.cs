@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using NewsMedia.Business;
 using System.ServiceModel.Syndication;
 using System.Xml;
@@ -19,6 +20,7 @@ namespace NewsMedia.Api.Controllers
             _httpFactory = httpFactory;
         }
 
+        [Authorize(Roles = "admin")]
         [HttpGet("{sourceId}")]
         public async Task<IActionResult> FetchSource(int sourceId)
         {

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using NewsMedia.Business;
 using NewsMedia.Models;
 
@@ -11,17 +12,21 @@ namespace NewsMedia.Api.Controllers
         private readonly ISourceItemBusiness _business;
         public SourceItemsController(ISourceItemBusiness business) => _business = business;
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAll() => Ok(await _business.GetAllAsync());
 
+        [Authorize]
         [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetByUser(string userId) =>
             Ok(await _business.GetByUserAsync(userId));
 
+        [Authorize]
         [HttpGet("source/{sourceId}")]
         public async Task<IActionResult> GetBySource(int sourceId) =>
             Ok(await _business.GetBySourceAsync(sourceId));
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] SourceItem item)
         {
@@ -29,6 +34,7 @@ namespace NewsMedia.Api.Controllers
             return Ok(created);
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -36,6 +42,7 @@ namespace NewsMedia.Api.Controllers
             return deleted ? NoContent() : NotFound();
         }
 
+        [Authorize]
         [HttpGet("export/{userId}")]
         public async Task<IActionResult> Export(string userId)
         {
@@ -44,6 +51,7 @@ namespace NewsMedia.Api.Controllers
             return File(bytes, "application/json", "mis-noticias.json");
         }
 
+        [Authorize]
         [HttpPost("import/{userId}")]
         public async Task<IActionResult> Import(string userId, IFormFile file)
         {

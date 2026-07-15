@@ -32,10 +32,12 @@ namespace NewsMedia.Mvc.Controllers
                     var id = data.TryGetProperty("id", out var uid) ? uid.GetString() ?? "" : "";
                     var role = data.TryGetProperty("role", out var r) ? r.GetString() ?? "viewer" : "viewer";
                     var firstName = data.TryGetProperty("firstName", out var fn) ? fn.GetString() ?? "" : "";
+                    var token = data.TryGetProperty("token", out var t) ? t.GetString() ?? "" : "";
                     HttpContext.Session.SetString("UserId", id);
                     HttpContext.Session.SetString("UserEmail", email);
                     HttpContext.Session.SetString("UserRole", role);
                     HttpContext.Session.SetString("UserName", firstName);
+                    HttpContext.Session.SetString("Token", token);
                     return RedirectToAction("Index", "Home");
                 }
             }
@@ -99,33 +101,6 @@ namespace NewsMedia.Mvc.Controllers
                 return RedirectToAction("Index", "Home");
             }
             ViewBag.Error = "Contraseña actual incorrecta.";
-            return View();
-        }
-
-        [HttpGet]
-        public IActionResult ForgotPassword() => View();
-
-        [HttpPost]
-        public async Task<IActionResult> ForgotPassword(string email)
-        {
-            try
-            {
-                var response = await _http.PostAsJsonAsync("api/auth/reset-password", new { email });
-                if (response.IsSuccessStatusCode)
-                {
-                    var result = await response.Content.ReadFromJsonAsync<JsonElement>();
-                    ViewBag.Success = true;
-                    ViewBag.TempPassword = result.GetProperty("tempPassword").GetString();
-                }
-                else
-                {
-                    ViewBag.Error = "No se encontró ninguna cuenta con ese correo.";
-                }
-            }
-            catch
-            {
-                ViewBag.Error = "Error al conectar con el servidor. Intenta de nuevo.";
-            }
             return View();
         }
 
