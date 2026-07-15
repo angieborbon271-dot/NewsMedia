@@ -11,15 +11,40 @@ namespace NewsMedia.Mvc.Controllers
 
         public SavedController(IHttpClientFactory factory) => _http = factory.CreateClient("Api");
 
-        public async Task<IActionResult> Index()
-        {
-            var userId = HttpContext.Session.GetString("UserId") ?? "anonymous";
-            var items = await _http.GetFromJsonAsync<List<SourceItem>>(
-                $"api/source-items/user/{userId}", _json) ?? new();
-            return View(items);
-        }
+		public async Task<IActionResult> Index()
+		{
+			var userId = HttpContext.Session.GetString("UserId") ?? "anonymous";
+			var items = await _http.GetFromJsonAsync<List<SourceItem>>(
+				$"api/source-items/user/{userId}", _json) ?? new();
 
-        public async Task<IActionResult> Download()
+			// Si no tiene guardados, mostramos items de las fuentes como fallback
+			List<Dictionary<string, string>> fallbackItems = new();
+			if (!items.Any())
+			{
+				var sources = await _http.GetFromJsonAsync<List<Source>>("api/sources", _json) ?? new();
+				foreach (var source in sources)
+				{
+					try
+					{
+						var url = $"api/sources/{source.Id}/items";
+						var fetched = await _http.GetFromJsonAsync<List<Dictionary<string, string>>>(url, _json);
+						if (fetched != null)
+							foreach (var item in fetched)
+							{
+								item["sourceName"] = source.Name;
+								item["sourceId"] = source.Id.ToString();
+							}
+						fallbackItems.AddRange(fetched ?? new());
+					}
+					catch { }
+				}
+			}
+
+			ViewBag.FallbackItems = fallbackItems;
+			return View(items);
+		}
+
+		public async Task<IActionResult> Download()
         {
             var userId = HttpContext.Session.GetString("UserId") ?? "anonymous";
             var response = await _http.GetAsync($"api/source-items/export/{userId}");

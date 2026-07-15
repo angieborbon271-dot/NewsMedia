@@ -64,14 +64,64 @@
     </div>
 </div>
 
+@{
+    var fallback = ViewBag.FallbackItems as List<Dictionary<string, string>> ?? new();
+}
 @if (!Model.Any())
 {
-    <div class="empty-state">
-        <div class="big-icon">🔖</div>
-        <h4>No tienes artículos guardados</h4>
-        <p>Ve a Noticias y haz clic en 🔖 para guardar los artículos que te interesen.</p>
-        <a href="/News" class="btn btn-dark mt-2" style="border-radius:8px;">Ir a Noticias</a>
+    <div class="alert alert-info mb-3">
+        Todavía no guardaste artículos. Te mostramos noticias de tus fuentes para que empieces.
     </div>
+
+    @if (!fallback.Any())
+    {
+        <div class="empty-state">
+            <div class="big-icon">🔖</div>
+            <h4>No tienes artículos guardados</h4>
+            <p>Ve a Noticias y haz clic en 🔖 para guardar los artículos que te interesen.</p>
+            <a href="/News" class="btn btn-dark mt-2" style="border-radius:8px;">Ir a Noticias</a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-3">
+            @foreach (var item in fallback)
+            {
+                var title = item.GetValueOrDefault("title", "Sin título");
+                var url = item.GetValueOrDefault("url", "#");
+                var desc = item.GetValueOrDefault("description", "");
+                var imgUrl = item.GetValueOrDefault("imageUrl", "");
+                var srcName = item.GetValueOrDefault("sourceName", "");
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0" style="border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08);">
+                        @if (!string.IsNullOrEmpty(imgUrl))
+                        {
+                            <a href="@url" target="_blank">
+                                <img src="@imgUrl" alt="@title" style="width:100%;height:175px;object-fit:cover;"
+                                     onerror="this.parentElement.style.display='none'" />
+                            </a>
+                        }
+                        <div class="card-body d-flex flex-column" style="padding:1rem;">
+                            <span class="badge bg-primary mb-2" style="width:fit-content;font-size:0.7rem;">@srcName</span>
+                            <h6 class="fw-bold" style="font-size:.92rem;line-height:1.4;">
+                                <a href="@url" target="_blank" class="text-dark text-decoration-none">@title</a>
+                            </h6>
+                            @if (!string.IsNullOrEmpty(desc))
+                            {
+                                <p class="text-muted small flex-grow-1" style="font-size:.82rem;">
+                                    @(desc.Length > 110 ? desc[..110] + "..." : desc)
+                                </p>
+                            }
+                            <a href="@url" target="_blank" class="btn btn-sm btn-outline-dark mt-auto" style="border-radius:6px;font-size:.8rem;">
+                                🔗 Leer artículo
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
 }
 else
 {
