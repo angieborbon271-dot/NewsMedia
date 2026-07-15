@@ -31,7 +31,7 @@ namespace NewsMedia.Api.Controllers
             return Ok(items);
         }
 
-        [Authorize]
+        [Authorize(Roles = "admin")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] Source source)
         {
@@ -39,7 +39,7 @@ namespace NewsMedia.Api.Controllers
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
-        [Authorize]
+        [Authorize(Roles = "admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] Source source)
         {
@@ -47,7 +47,7 @@ namespace NewsMedia.Api.Controllers
             return updated == null ? NotFound() : Ok(updated);
         }
 
-        [Authorize]
+        [Authorize(Roles = "admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

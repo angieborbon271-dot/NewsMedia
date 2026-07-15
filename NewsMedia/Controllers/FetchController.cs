@@ -20,7 +20,7 @@ namespace NewsMedia.Api.Controllers
             _httpFactory = httpFactory;
         }
 
-        [Authorize]
+        [Authorize(Roles = "admin")]
         [HttpGet("{sourceId}")]
         public async Task<IActionResult> FetchSource(int sourceId)
         {

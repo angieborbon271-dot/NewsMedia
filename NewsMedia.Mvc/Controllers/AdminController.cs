@@ -29,6 +29,7 @@ namespace NewsMedia.Mvc.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateSource(Source source)
         {
+            var check = RedirectIfNotAdmin(); if (check != null) return check;
             await _http.PostAsJsonAsync("api/sources", source);
             TempData["Success"] = "Fuente creada correctamente.";
             return RedirectToAction(nameof(Sources));
@@ -37,6 +38,7 @@ namespace NewsMedia.Mvc.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteSource(int id)
         {
+            var check = RedirectIfNotAdmin(); if (check != null) return check;
             await _http.DeleteAsync($"api/sources/{id}");
             TempData["Success"] = "Fuente eliminada.";
             return RedirectToAction(nameof(Sources));
@@ -45,6 +47,7 @@ namespace NewsMedia.Mvc.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateSource(int id, Source source)
         {
+            var check = RedirectIfNotAdmin(); if (check != null) return check;
             await _http.PutAsJsonAsync($"api/sources/{id}", source);
             TempData["Success"] = "Fuente actualizada.";
             return RedirectToAction(nameof(Sources));
@@ -63,6 +66,7 @@ namespace NewsMedia.Mvc.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateSetting(Setting setting)
         {
+            var check = RedirectIfNotAdmin(); if (check != null) return check;
             await _http.PostAsJsonAsync("api/settings", setting);
             TempData["Success"] = "Secret guardado.";
             return RedirectToAction(nameof(Config));
@@ -71,6 +75,7 @@ namespace NewsMedia.Mvc.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteSetting(int id)
         {
+            var check = RedirectIfNotAdmin(); if (check != null) return check;
             await _http.DeleteAsync($"api/settings/{id}");
             TempData["Success"] = "Secret eliminado.";
             return RedirectToAction(nameof(Config));
@@ -79,6 +84,7 @@ namespace NewsMedia.Mvc.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateRole(string id, string role)
         {
+            var check = RedirectIfNotAdmin(); if (check != null) return check;
             var content = new StringContent($"\"{role}\"", System.Text.Encoding.UTF8, "application/json");
             await _http.PutAsync($"api/users/{id}/role", content);
             TempData["Success"] = "Rol actualizado.";
@@ -87,6 +93,7 @@ namespace NewsMedia.Mvc.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteUser(string id)
         {
+            var check = RedirectIfNotAdmin(); if (check != null) return check;
             await _http.DeleteAsync($"api/users/{id}");
             TempData["Success"] = "Usuario eliminado.";
             return RedirectToAction(nameof(Config));
