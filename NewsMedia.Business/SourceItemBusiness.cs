@@ -31,43 +31,64 @@ namespace NewsMedia.Business
             return await _repo.CreateAsync(sourceItem);
         }
 
-        // Exporta los items guardados como JSON descargable
-        public async Task<string> ExportToJsonAsync(string userId)
-        {
-            var items = await _repo.GetByUserAsync(userId);
-            var export = items.Select(i => new
-            {
-                i.Id,
-                i.SourceId,
-                i.Json,
-                i.SavedBy,
-                i.CreatedAt
-            });
-            return JsonSerializer.Serialize(export, new JsonSerializerOptions { WriteIndented = true });
-        }
+		// Exporta los items guardados como JSON descargable
+		public async Task<string> ExportToJsonAsync(string userId)
+		{
+			var items = await _repo.GetByUserAsync(userId);
+			var export = items.Select(i => new
+			{
+				i.Id,
+				i.SourceId,
+				i.Json,
+				i.SavedBy,
+				i.CreatedAt
+			});
+			return JsonSerializer.Serialize(export, new JsonSerializerOptions
+			{
+				WriteIndented = true,
+				PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+			});
+		}
 
-        // Importa items desde un JSON subido por el usuario
-        public async Task<int> ImportFromJsonAsync(string jsonContent, string userId)
-        {
-            var items = JsonSerializer.Deserialize<List<JsonElement>>(jsonContent);
-            if (items == null) return 0;
+		// Importa items desde un JSON subido por el usuario
+		// Importa items desde un JSON subido por el usuario
+		public async Task<int> ImportFromJsonAsync(string jsonContent, string userId)
+		{
+			var items = JsonSerializer.Deserialize<List<JsonElement>>(jsonContent);
+			if (items == null) return 0;
 
-            int count = 0;
-            foreach (var item in items)
-            {
-                var sourceId = item.TryGetProperty("sourceId", out var sid) ? sid.GetInt32() : 0;
-                var json = item.TryGetProperty("json", out var j) ? j.GetString() ?? "{}" : "{}";
+			int count = 0;
+			foreach (var item in items)
+			{
+				var sourceId = TryGetPropertyCI(item, "sourceId", out var sid) ? sid.GetInt32() : 0;
+				var json = TryGetPropertyCI(item, "json", out var j) ? (j.GetString() ?? "{}") : "{}";
 
-                await _repo.CreateAsync(new SourceItem
-                {
-                    SourceId = sourceId,
-                    Json = json,
-                    SavedBy = userId,
-                    CreatedAt = DateTime.UtcNow
-                });
-                count++;
-            }
-            return count;
-        }
-    }
+				await _repo.CreateAsync(new SourceItem
+				{
+					SourceId = sourceId,
+					Json = json,
+					SavedBy = userId,
+					CreatedAt = DateTime.UtcNow
+				});
+				count++;
+			}
+			return count;
+		}
+
+		// Busca una propiedad sin importar mayúsculas/minúsculas (por si otro grupo
+		// manda el JSON en un casing distinto al acordado)
+		private static bool TryGetPropertyCI(JsonElement element, string propertyName, out JsonElement value)
+		{
+			foreach (var prop in element.EnumerateObject())
+			{
+				if (string.Equals(prop.Name, propertyName, StringComparison.OrdinalIgnoreCase))
+				{
+					value = prop.Value;
+					return true;
+				}
+			}
+			value = default;
+			return false;
+		}
+	}
 }
