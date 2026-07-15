@@ -4,11 +4,11 @@ using System.Text.Json;
 
 namespace NewsMedia.Business
 {
-    public class SourceItemBusiness
+    public class SourceItemBusiness : ISourceItemBusiness
     {
-        private readonly SourceItemRepository _repo;
+        private readonly ISourceItemRepository _repo;
 
-        public SourceItemBusiness(SourceItemRepository repo)
+        public SourceItemBusiness(ISourceItemRepository repo)
         {
             _repo = repo;
         }

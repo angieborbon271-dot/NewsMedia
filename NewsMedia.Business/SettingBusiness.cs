@@ -3,11 +3,11 @@ using NewsMedia.Repositories;
 
 namespace NewsMedia.Business
 {
-    public class SettingBusiness
+    public class SettingBusiness : ISettingBusiness
     {
-        private readonly SettingRepository _repo;
+        private readonly ISettingRepository _repo;
 
-        public SettingBusiness(SettingRepository repo)
+        public SettingBusiness(ISettingRepository repo)
         {
             _repo = repo;
         }

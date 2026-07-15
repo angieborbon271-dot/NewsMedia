@@ -55,6 +55,22 @@ namespace NewsMedia.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Collections",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    OwnerId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Collections", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Settings",
                 columns: table => new
                 {
@@ -205,11 +221,18 @@ namespace NewsMedia.Data.Migrations
                     SourceId = table.Column<int>(type: "int", nullable: false),
                     Json = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     SavedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CollectionId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SourceItems", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SourceItems_Collections_CollectionId",
+                        column: x => x.CollectionId,
+                        principalTable: "Collections",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK_SourceItems_Sources_SourceId",
                         column: x => x.SourceId,
@@ -258,6 +281,11 @@ namespace NewsMedia.Data.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_SourceItems_CollectionId",
+                table: "SourceItems",
+                column: "CollectionId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_SourceItems_SourceId",
                 table: "SourceItems",
                 column: "SourceId");
@@ -292,6 +320,9 @@ namespace NewsMedia.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Collections");
 
             migrationBuilder.DropTable(
                 name: "Sources");

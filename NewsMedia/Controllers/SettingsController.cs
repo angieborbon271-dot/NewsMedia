@@ -8,8 +8,8 @@ namespace NewsMedia.Api.Controllers
     [Route("api/settings")]
     public class SettingsController : ControllerBase
     {
-        private readonly SettingBusiness _business;
-        public SettingsController(SettingBusiness business) => _business = business;
+        private readonly ISettingBusiness _business;
+        public SettingsController(ISettingBusiness business) => _business = business;
 
         [HttpGet]
         public async Task<IActionResult> GetAll() => Ok(await _business.GetAllAsync());
