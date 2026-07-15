@@ -104,32 +104,5 @@ namespace NewsMedia.Mvc.Controllers
             return View();
         }
 
-        [HttpGet]
-        public IActionResult ForgotPassword() => View();
-
-        [HttpPost]
-        public async Task<IActionResult> ForgotPassword(string email)
-        {
-            try
-            {
-                var response = await _http.PostAsJsonAsync("api/auth/reset-password", new { email });
-                if (response.IsSuccessStatusCode)
-                {
-                    var result = await response.Content.ReadFromJsonAsync<JsonElement>();
-                    ViewBag.Success = true;
-                    ViewBag.TempPassword = result.GetProperty("tempPassword").GetString();
-                }
-                else
-                {
-                    ViewBag.Error = "No se encontró ninguna cuenta con ese correo.";
-                }
-            }
-            catch
-            {
-                ViewBag.Error = "Error al conectar con el servidor. Intenta de nuevo.";
-            }
-            return View();
-        }
-
     }  
 }    

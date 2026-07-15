@@ -16,9 +16,6 @@ namespace NewsMedia.Mvc.Handlers
         {
             var token = _httpContextAccessor.HttpContext?.Session.GetString("Token");
 
-            // Log temporal para diagnosticar los 401 del paso siguiente
-            Console.WriteLine($"[Auth] {request.RequestUri} | Bearer enviado: {token is not null}");
-
             if (!string.IsNullOrEmpty(token))
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
