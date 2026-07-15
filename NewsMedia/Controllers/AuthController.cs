@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using NewsMedia.Api.Services;
 using NewsMedia.Models;
@@ -67,6 +68,7 @@ namespace NewsMedia.Api.Controllers
             return Ok(new { message = "Sesión cerrada" });
         }
 
+        [Authorize]
         [HttpPost("change-password")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
         {
@@ -77,6 +79,7 @@ namespace NewsMedia.Api.Controllers
             return Ok(new { message = "Contraseña actualizada" });
         }
 
+        [Authorize]
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
         {
