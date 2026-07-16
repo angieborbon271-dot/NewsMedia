@@ -8,7 +8,7 @@ namespace NewsMedia.Business.FetchStrategies
         private readonly HttpClient _http;
         public JsonFetchStrategy(IHttpClientFactory httpClientFactory)
         {
-            _http = httpClientFactory.CreateClient();
+            _http = httpClientFactory.CreateClient("SourceFetch");
         }
 
         public virtual string ComponentType => "json";

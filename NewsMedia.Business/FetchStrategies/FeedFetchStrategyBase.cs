@@ -10,7 +10,7 @@ namespace NewsMedia.Business.FetchStrategies
 
         protected FeedFetchStrategyBase(IHttpClientFactory httpClientFactory)
         {
-            Http = httpClientFactory.CreateClient();
+            Http = httpClientFactory.CreateClient("SourceFetch");
         }
 
         public abstract string ComponentType { get; }
