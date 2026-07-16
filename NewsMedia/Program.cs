@@ -6,6 +6,7 @@ using NewsMedia.Data;
 using NewsMedia.Models;
 using NewsMedia.Repositories;
 using NewsMedia.Business;
+using NewsMedia.Business.FetchStrategies;
 using NewsMedia.Api;
 using NewsMedia.Api.Services;
 using System.Text;
@@ -62,6 +63,13 @@ builder.Services.AddScoped<ISettingRepository, SettingRepository>();
 builder.Services.AddScoped<ISourceBusiness, SourceBusiness>();
 builder.Services.AddScoped<ISourceItemBusiness, SourceItemBusiness>();
 builder.Services.AddScoped<ISettingBusiness, SettingBusiness>();
+
+// Patrón Strategy para el parseo de fuentes (RSS, XML, JSON, API, HTML)
+builder.Services.AddTransient<IFetchStrategy, RssFetchStrategy>();
+builder.Services.AddTransient<IFetchStrategy, XmlFetchStrategy>();
+builder.Services.AddTransient<IFetchStrategy, JsonFetchStrategy>();
+builder.Services.AddTransient<IFetchStrategy, ApiFetchStrategy>();
+builder.Services.AddTransient<IFetchStrategy, HtmlFetchStrategy>();
 
 builder.Services.AddCors(options =>
 {
