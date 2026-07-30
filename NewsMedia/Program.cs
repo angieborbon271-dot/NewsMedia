@@ -67,6 +67,16 @@ builder.Services.AddScoped<ISourceBusiness, SourceBusiness>();
 builder.Services.AddScoped<ISourceItemBusiness, SourceItemBusiness>();
 builder.Services.AddScoped<ISettingBusiness, SettingBusiness>();
 
+builder.Services.AddScoped<ISourceRepository, SourceRepository>();
+builder.Services.AddScoped<ISourceItemRepository, SourceItemRepository>();
+builder.Services.AddScoped<ISettingRepository, SettingRepository>();
+builder.Services.AddScoped<ICollectionRepository, CollectionRepository>();
+
+builder.Services.AddScoped<ISourceBusiness, SourceBusiness>();
+builder.Services.AddScoped<ISourceItemBusiness, SourceItemBusiness>();
+builder.Services.AddScoped<ISettingBusiness, SettingBusiness>();
+builder.Services.AddScoped<ICollectionBusiness, CollectionBusiness>();
+
 // Patrón Strategy para el parseo de fuentes (RSS, XML, JSON, API, HTML)
 builder.Services.AddTransient<IFetchStrategy, RssFetchStrategy>();
 builder.Services.AddTransient<IFetchStrategy, XmlFetchStrategy>();
