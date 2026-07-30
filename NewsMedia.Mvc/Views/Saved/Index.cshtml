@@ -171,11 +171,10 @@ else
                                    class="btn btn-sm btn-outline-dark flex-grow-1" style="border-radius:6px;font-size:.8rem;">
                                     🔗 Leer artículo
                                 </a>
-                                <form method="post" action="/Saved/Delete">
+                                <form method="post" action="/Saved/Delete" data-confirm="¿Eliminar este artículo?">
                                     <input type="hidden" name="id" value="@item.Id" />
                                     <button type="submit" class="btn btn-sm btn-outline-danger"
-                                            style="border-radius:6px;"
-                                            onclick="return confirm('¿Eliminar este artículo?')">
+                                            style="border-radius:6px;">
                                         🗑️
                                     </button>
                                 </form>
