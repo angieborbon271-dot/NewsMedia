@@ -83,10 +83,9 @@
                         <div class="d-flex gap-1">
                             <button class="btn btn-sm btn-outline-secondary" style="border-radius:6px;font-size:.78rem;"
                                     data-bs-toggle="modal" data-bs-target="#editModal-@src.Id">✏️</button>
-                            <form method="post" action="/Admin/DeleteSource" class="d-inline">
+                            <form method="post" action="/Admin/DeleteSource" class="d-inline" data-confirm="¿Eliminar «@src.Name»?">
                                 <input type="hidden" name="id" value="@src.Id" />
-                                <button type="submit" class="btn btn-sm btn-outline-danger" style="border-radius:6px;font-size:.78rem;"
-                                        onclick="return confirm('¿Eliminar «@src.Name»?')">🗑️</button>
+                                <button type="submit" class="btn btn-sm btn-outline-danger" style="border-radius:6px;font-size:.78rem;">🗑️</button>
                             </form>
                         </div>
                     </td>
