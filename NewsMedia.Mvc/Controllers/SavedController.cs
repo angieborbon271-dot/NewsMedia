@@ -4,16 +4,19 @@ using System.Text.Json;
 
 namespace NewsMedia.Mvc.Controllers
 {
-    public class SavedController : Controller
-    {
-        private readonly HttpClient _http;
-        private readonly JsonSerializerOptions _json = new() { PropertyNameCaseInsensitive = true };
+	public class SavedController : Controller
+	{
+		private readonly HttpClient _http;
+		private readonly JsonSerializerOptions _json = new() { PropertyNameCaseInsensitive = true };
 
-        public SavedController(IHttpClientFactory factory) => _http = factory.CreateClient("Api");
+		public SavedController(IHttpClientFactory factory) => _http = factory.CreateClient("Api");
 
 		public async Task<IActionResult> Index()
 		{
-			var userId = HttpContext.Session.GetString("UserId") ?? "anonymous";
+			var userId = HttpContext.Session.GetString("UserId");
+			if (string.IsNullOrEmpty(userId))
+				return RedirectToAction("Login", "Auth");
+
 			var items = await _http.GetFromJsonAsync<List<SourceItem>>(
 				$"api/source-items/user/{userId}", _json) ?? new();
 
@@ -45,35 +48,41 @@ namespace NewsMedia.Mvc.Controllers
 		}
 
 		public async Task<IActionResult> Download()
-        {
-            var userId = HttpContext.Session.GetString("UserId") ?? "anonymous";
-            var response = await _http.GetAsync($"api/source-items/export/{userId}");
-            var bytes = await response.Content.ReadAsByteArrayAsync();
-            return File(bytes, "application/json", "mis-noticias.json");
-        }
+		{
+			var userId = HttpContext.Session.GetString("UserId");
+			if (string.IsNullOrEmpty(userId))
+				return RedirectToAction("Login", "Auth");
 
-        [HttpPost]
-        public async Task<IActionResult> Upload(IFormFile file)
-        {
-            var userId = HttpContext.Session.GetString("UserId") ?? "anonymous";
-            using var form = new MultipartFormDataContent();
-            using var stream = file.OpenReadStream();
-            form.Add(new StreamContent(stream), "file", file.FileName);
+			var response = await _http.GetAsync($"api/source-items/export/{userId}");
+			var bytes = await response.Content.ReadAsByteArrayAsync();
+			return File(bytes, "application/json", "mis-noticias.json");
+		}
 
-            var response = await _http.PostAsync($"api/source-items/import/{userId}", form);
-            if (response.IsSuccessStatusCode)
-                TempData["Success"] = "Artículos importados correctamente.";
-            else
-                TempData["Error"] = "Error al importar el archivo.";
+		[HttpPost]
+		public async Task<IActionResult> Upload(IFormFile file)
+		{
+			var userId = HttpContext.Session.GetString("UserId");
+			if (string.IsNullOrEmpty(userId))
+				return RedirectToAction("Login", "Auth");
 
-            return RedirectToAction(nameof(Index));
-        }
+			using var form = new MultipartFormDataContent();
+			using var stream = file.OpenReadStream();
+			form.Add(new StreamContent(stream), "file", file.FileName);
 
-        [HttpPost]
-        public async Task<IActionResult> Delete(int id)
-        {
-            await _http.DeleteAsync($"api/source-items/{id}");
-            return RedirectToAction(nameof(Index));
-        }
-    }
+			var response = await _http.PostAsync($"api/source-items/import/{userId}", form);
+			if (response.IsSuccessStatusCode)
+				TempData["Success"] = "Artículos importados correctamente.";
+			else
+				TempData["Error"] = "Error al importar el archivo.";
+
+			return RedirectToAction(nameof(Index));
+		}
+
+		[HttpPost]
+		public async Task<IActionResult> Delete(int id)
+		{
+			await _http.DeleteAsync($"api/source-items/{id}");
+			return RedirectToAction(nameof(Index));
+		}
+	}
 }
