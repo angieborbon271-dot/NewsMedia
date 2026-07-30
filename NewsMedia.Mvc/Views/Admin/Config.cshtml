@@ -152,13 +152,21 @@
         <div class="admin-card">
             <div class="admin-card-header">🔑 Secrets y Configuración</div>
             <div class="admin-card-body">
-                <form method="post" action="/Admin/CreateSetting" class="d-flex gap-2 mb-3">
-                    <input name="key" placeholder="Clave (ej: NEWS_API_KEY)" class="form-control" required />
-                    <input name="value" placeholder="Valor" class="form-control" required />
-                    <button type="submit" class="btn btn-sm text-white fw-bold"
-                            style="background:#c0392b;border-radius:8px;padding:0 14px;white-space:nowrap;">
-                        +
-                    </button>
+                <form method="post" action="/Admin/CreateSetting" class="mb-3">
+                    <div class="d-flex gap-2">
+                        <input name="key" placeholder="Clave (ej: NEWS_API_KEY)" class="form-control" required />
+                        <input name="value" placeholder="Valor" class="form-control" required />
+                        <button type="submit" class="btn btn-sm text-white fw-bold"
+                                style="background:#c0392b;border-radius:8px;padding:0 14px;white-space:nowrap;">
+                            +
+                        </button>
+                    </div>
+                    <div class="form-check mt-2">
+                        <input type="checkbox" name="IsSecret" value="true" class="form-check-input" id="isSecretCheck" />
+                        <label class="form-check-label" for="isSecretCheck" style="font-size:.8rem;color:#888;">
+                            🔒 Marcar como secreto (ocultar el valor en pantalla)
+                        </label>
+                    </div>
                 </form>
 
                 @if (!Model.Any())
@@ -170,13 +178,22 @@
                     @foreach (var s in Model)
                     {
                         <div class="setting-row">
-                            <span class="setting-key">@s.Key</span>
-                            <span class="setting-val">@(s.Value?.Length > 18 ? s.Value[..18] + "…" : s.Value)</span>
-                            <form method="post" action="/Admin/DeleteSetting" class="d-inline ms-1">
+                            <span class="setting-key">
+                                @s.Key
+                                @if (s.IsSecret)
+                                {
+                                    <span title="Secreto">🔒</span>
+                                }
+                            </span>
+                            <span class="setting-val">
+                                @(s.IsSecret
+                                    ? "••••••••"
+                                    : (s.Value?.Length > 18 ? s.Value[..18] + "…" : s.Value))
+                            </span>
+                            <form method="post" action="/Admin/DeleteSetting" class="d-inline ms-1" data-confirm="¿Eliminar «@s.Key»?">
                                 <input type="hidden" name="id" value="@s.Id" />
                                 <button type="submit" class="btn btn-sm btn-outline-danger"
-                                        style="border-radius:6px;padding:2px 8px;font-size:.78rem;"
-                                        onclick="return confirm('¿Eliminar «@s.Key»?')">
+                                        style="border-radius:6px;padding:2px 8px;font-size:.78rem;">
                                     🗑️
                                 </button>
                             </form>
@@ -220,7 +237,7 @@
                                 <button type="submit" class="btn-save-role">✓</button>
                             </form>
                             <form method="post" action="/Admin/DeleteUser" class="d-inline"
-                                  onsubmit="return confirm('¿Eliminar a @email? Esta acción no se puede deshacer.')">
+                                  data-confirm="¿Eliminar a @email? Esta acción no se puede deshacer.">
                                 <input type="hidden" name="id" value="@uid" />
                                 <button type="submit"
                                         class="btn btn-sm btn-outline-danger"
