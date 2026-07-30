@@ -1,0 +1,205 @@
+﻿@model List<NewsMedia.Models.Collection>
+@{
+    ViewData["Title"] = "Mis Carpetas";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.8rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 5rem 2rem;
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 2px 10px rgba(0,0,0,.05);
+    }
+
+        .empty-state .big-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h4 {
+            font-family: 'Playfair Display',serif;
+            color: #1a1a2e;
+            margin-bottom: .5rem;
+        }
+
+        .empty-state p {
+            color: #888;
+            font-size: .9rem;
+        }
+
+    .folder-card {
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 2px 12px rgba(0,0,0,.06);
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+
+    .folder-header {
+        background: #1a1a2e;
+        color: #fff;
+        padding: 14px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .folder-title {
+        font-family: 'Playfair Display', serif;
+        font-weight: 700;
+        font-size: 1.05rem;
+        margin: 0;
+    }
+
+    .folder-desc {
+        font-size: .78rem;
+        color: rgba(255,255,255,.7);
+        margin: 2px 0 0;
+    }
+
+    .folder-body {
+        padding: 1.2rem;
+    }
+
+    .item-row {
+        display: flex;
+        align-items: center;
+        gap: .8rem;
+        padding: 8px 0;
+        border-bottom: 1px solid #f5f5f5;
+    }
+
+        .item-row:last-child {
+            border-bottom: none;
+        }
+
+    .item-title {
+        flex: 1;
+        font-size: .85rem;
+        color: #1a1a2e;
+        font-weight: 600;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+</style>
+
+<div class="page-header">
+    <div>
+        <h2 class="fw-bold mb-0" style="font-family:'Playfair Display',serif;">📁 Mis Carpetas</h2>
+        @if (Model.Any())
+        {
+            <p class="text-muted small mb-0 mt-1">@Model.Count carpeta@(Model.Count != 1 ? "s" : "")</p>
+        }
+    </div>
+    <button class="btn btn-sm text-white fw-bold px-3" style="background:#c0392b;border-radius:8px;"
+            data-bs-toggle="modal" data-bs-target="#newFolderModal">
+        + Nueva carpeta
+    </button>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="empty-state">
+        <div class="big-icon">📁</div>
+        <h4>Todavía no tienes carpetas</h4>
+        <p>Creá una carpeta para organizar tus noticias guardadas por tema (ej: "Deportes").</p>
+        <button class="btn btn-dark mt-2" style="border-radius:8px;"
+                data-bs-toggle="modal" data-bs-target="#newFolderModal">
+            + Crear mi primera carpeta
+        </button>
+    </div>
+}
+else
+{
+    @foreach (var col in Model)
+    {
+        <div class="folder-card">
+            <div class="folder-header">
+                <div>
+                    <p class="folder-title">📁 @col.Name</p>
+                    @if (!string.IsNullOrEmpty(col.Description))
+                    {
+                        <p class="folder-desc">@col.Description</p>
+                    }
+                </div>
+                <form method="post" action="/Collections/Delete"
+      data-confirm="¿Eliminar la carpeta «@col.Name»? Las noticias no se borran, solo quedan sin carpeta.">
+    <input type="hidden" name="id" value="@col.Id" />
+    <button type="submit" class="btn btn-sm btn-outline-light"
+            style="border-radius:6px;font-size:.78rem;">
+        🗑️ Eliminar carpeta
+    </button>
+</form>
+            </div>
+            <div class="folder-body">
+                @if (!col.Items.Any())
+                {
+                    <p class="text-muted small mb-0">No hay noticias en esta carpeta todavía. Guardalas desde <a href="/News">Noticias</a> eligiendo esta carpeta.</p>
+                }
+                else
+                {
+                    @foreach (var item in col.Items)
+                    {
+                        var data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(
+                            item.Json ?? "{}", new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new();
+                        var title = data.GetValueOrDefault("title", "Sin título");
+                        var url = data.GetValueOrDefault("url", "#");
+
+                        <div class="item-row">
+                            <span class="item-title" title="@title">
+                                <a href="@url" target="_blank" class="text-dark text-decoration-none">@title</a>
+                            </span>
+                            <form method="post" action="/Collections/RemoveItem">
+                                <input type="hidden" name="sourceItemId" value="@item.Id" />
+                                <button type="submit" class="btn btn-sm btn-outline-secondary"
+                                        style="border-radius:6px;font-size:.75rem;" title="Quitar de la carpeta">
+                                    ✖ Quitar
+                                </button>
+                            </form>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    }
+}
+
+<!-- Modal nueva carpeta -->
+<div class="modal fade" id="newFolderModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius:14px;overflow:hidden;">
+            <div class="modal-header" style="background:#1a1a2e;color:#fff;border:none;">
+                <h5 class="modal-title">📁 Nueva carpeta</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="/Collections/Create">
+                <div class="modal-body px-4 py-3">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Nombre</label>
+                        <input name="name" placeholder="Ej: Deportes" class="form-control" required />
+                    </div>
+                    <div class="mb-1">
+                        <label class="form-label small fw-bold">Descripción (opcional)</label>
+                        <input name="description" placeholder="Ej: Noticias de fútbol y otros deportes" class="form-control" />
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary btn-sm" style="background:#1a1a2e;border:none;border-radius:8px;">Crear</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
