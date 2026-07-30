@@ -4,6 +4,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     var sources = ViewBag.Sources as List<NewsMedia.Models.Source> ?? new();
     var selected = ViewBag.SelectedSource as int?;
+    var collections = ViewBag.Collections as List<NewsMedia.Models.Collection> ?? new();
 
     var pageSize = 12;
     var totalPages = (int)Math.Ceiling(Model.Count / (double)pageSize);
@@ -86,13 +87,25 @@
                         </button>
                         @if (Context.Session.GetString("UserId") != null)
                         {
-                            <form method="post" action="/News/Save">
+                            <form method="post" action="/News/Save" class="d-flex gap-1">
                                 <input type="hidden" name="sourceId" value="@srcId" />
                                 <input type="hidden" name="title" value="@title" />
                                 <input type="hidden" name="url" value="@url" />
                                 <input type="hidden" name="description" value="@desc" />
                                 <input type="hidden" name="publishedAt" value="@date" />
                                 <input type="hidden" name="imageUrl" value="@imgUrl" />
+                                @if (collections.Any())
+                                {
+                                    <select name="collectionId" class="form-select form-select-sm"
+                                            style="max-width:100px;font-size:.7rem;border-radius:6px;"
+                                            title="Elegir carpeta (opcional)">
+                                        <option value="">Sin carpeta</option>
+                                        @foreach (var c in collections)
+                                        {
+                                            <option value="@c.Id">@c.Name</option>
+                                        }
+                                    </select>
+                                }
                                 <button type="submit" class="btn btn-sm btn-warning" style="border-radius:6px;" title="Guardar">🔖</button>
                             </form>
                         }
