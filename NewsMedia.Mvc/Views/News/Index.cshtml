@@ -80,9 +80,15 @@
                         }
                     </div>
                     <div class="d-flex gap-2 mt-auto">
-                        <button class="btn btn-sm btn-outline-dark flex-grow-1"
+                        <button class="btn btn-sm btn-outline-dark flex-grow-1 btn-modo-lectura"
                                 style="font-size:0.8rem;border-radius:6px;"
-                                onclick="abrirLectura('@Html.Raw(title.Replace("'", "\\'")), '@Html.Raw(desc.Replace("'", "\\'")), '@url', '@srcName', '@date', @readMin, '@imgUrl')">
+                                data-titulo="@title"
+                                data-desc="@desc"
+                                data-url="@url"
+                                data-fuente="@srcName"
+                                data-fecha="@date"
+                                data-minutos="@readMin"
+                                data-img="@imgUrl">
                             📖 Modo Lectura
                         </button>
                         @if (Context.Session.GetString("UserId") != null)
@@ -200,4 +206,20 @@
         fontSize = Math.min(24, Math.max(12, fontSize + delta));
         document.getElementById('lr-body').style.fontSize = fontSize + 'px';
     }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.btn-modo-lectura').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                abrirLectura(
+                    btn.dataset.titulo,
+                    btn.dataset.desc,
+                    btn.dataset.url,
+                    btn.dataset.fuente,
+                    btn.dataset.fecha,
+                    parseInt(btn.dataset.minutos, 10),
+                    btn.dataset.img
+                );
+            });
+        });
+    });
 </script>
