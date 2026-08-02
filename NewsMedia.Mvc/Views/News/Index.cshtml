@@ -56,12 +56,12 @@
         var title = item.GetValueOrDefault("title", "Sin título");
         var url = item.GetValueOrDefault("url", "#");
         var desc = item.GetValueOrDefault("description", "");
-        var date = FormatFecha(item.GetValueOrDefault("publishedAt", ""));
+        var date = item.GetValueOrDefault("publishedAt", "");
         var srcName = item.GetValueOrDefault("sourceName", "");
         var imgUrl = item.GetValueOrDefault("imageUrl", "");
         var srcId = int.TryParse(item.GetValueOrDefault("sourceId", "0"), out var sid) ? sid : 0;
-        var words = (title + " " + desc).Split(' ').Length;
-        var readMin = Math.Max(1, words / 200);
+        var words = (title + " " + desc).Split(' ', StringSplitOptions.RemoveEmptyEntries).Length;
+        var readMin = Math.Max(1, (int)Math.Ceiling(words / 200.0));
 
         <div class="col-md-6 col-lg-4">
             <div class="card h-100 border-0" style="border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
@@ -89,7 +89,7 @@
                         </p>
                     }
                     <div class="d-flex gap-2 text-muted mb-2" style="font-size:0.75rem;">
-                        <span>⏱️ ~@readMin min de lectura</span>
+                        <span>⏱️ ~@readMin min (resumen)</span>
                         @if (!string.IsNullOrEmpty(date))
                         {
                             <span>🕐 @date</span>
