@@ -1,5 +1,21 @@
 ﻿@model List<Dictionary<string, string>>
 @{
+    @functions {
+        string FormatFecha(string raw)
+        {
+            if (string.IsNullOrWhiteSpace(raw)) return "";
+
+            if (DateTime.TryParse(raw, System.Globalization.CultureInfo.InvariantCulture,
+                    System.Globalization.DateTimeStyles.AdjustToUniversal | System.Globalization.DateTimeStyles.AssumeUniversal,
+                    out var dt))
+            {
+                return dt.ToString("d MMM yyyy, HH:mm", new System.Globalization.CultureInfo("es-ES"));
+            }
+
+            return raw; // si no se puede parsear, se muestra el valor original como respaldo
+        }
+    }
+
     ViewData["Title"] = "Noticias";
     Layout = "~/Views/Shared/_Layout.cshtml";
     var sources = ViewBag.Sources as List<NewsMedia.Models.Source> ?? new();
@@ -40,7 +56,7 @@
         var title = item.GetValueOrDefault("title", "Sin título");
         var url = item.GetValueOrDefault("url", "#");
         var desc = item.GetValueOrDefault("description", "");
-        var date = item.GetValueOrDefault("publishedAt", "");
+        var date = FormatFecha(item.GetValueOrDefault("publishedAt", ""));
         var srcName = item.GetValueOrDefault("sourceName", "");
         var imgUrl = item.GetValueOrDefault("imageUrl", "");
         var srcId = int.TryParse(item.GetValueOrDefault("sourceId", "0"), out var sid) ? sid : 0;
